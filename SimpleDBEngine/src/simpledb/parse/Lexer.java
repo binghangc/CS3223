@@ -31,7 +31,7 @@ public class Lexer {
     * Returns true if the current token is
     * the specified operator char.
     * @param opr a char denoting the operator
-    * @return true if the delimiter is the current token
+    * @return true if the operator is the current token
     */
    public boolean matchOpr(char opr) {
       return operators.contains(opr) && opr == tok.ttype;
