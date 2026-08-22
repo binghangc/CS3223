@@ -8,11 +8,13 @@ public class TokenizerTest {
    private static Collection<String> keywords = Arrays.asList("select", "from", "where", "and",
          "insert", "into", "values", "delete", "update", "set", 
          "create", "table", "int", "varchar", "view", "as", "index", "on");
+   private static Collection<Character> operators = Arrays.asList('<', '>', '=', '!');
 
    public static void main(String[] args) throws IOException {      
       String s = getStringFromUser();
       StreamTokenizer tok = new StreamTokenizer(new StringReader(s));
       tok.ordinaryChar('.');
+      tok.wordChars('_', '_');
       tok.lowerCaseMode(true); //ids and keywords are converted to lower case
       while (tok.nextToken() != TT_EOF)
          printCurrentToken(tok);
@@ -38,6 +40,8 @@ public class TokenizerTest {
       }
       else if (tok.ttype == '\'')
          System.out.println("StringConstant " + tok.sval);
+      else if (operators.contains((char)tok.ttype))
+         System.out.println("Operator " + (char)tok.ttype);
       else
          System.out.println("Delimiter " + (char)tok.ttype);
    }
