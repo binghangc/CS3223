@@ -1,1 +1,17 @@
-/.metadata/
+# Java build output
+bin/
+*/bin/
+*.class
+
+# macOS
+.DS_Store
+
+# Eclipse workspace noise
+.metadata/
+
+# VS Code local config, optional
+.vscode/
+
+# Runtime/generated SimpleDB database files
+studentdb/
+*/studentdb/
