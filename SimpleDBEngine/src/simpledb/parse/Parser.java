@@ -75,6 +75,9 @@ public class Parser {
          }
       }
 
+      if (opr.equals("") || opr.equals("!"))
+         throw new BadSyntaxException();
+
       Expression rhs = expression();
       return new Term(lhs, opr, rhs);
    }
