@@ -1,4 +1,5 @@
 package simpledb.parse;
+
 import java.util.Scanner;
 
 public class ParserTestActions {
@@ -10,13 +11,12 @@ public class ParserTestActions {
          Parser p = new Parser(s);
          try {
             String result;
-            if (s.startsWith("select")) 
+            if (s.startsWith("select"))
                result = p.query().toString();
             else
                result = p.updateCmd().getClass().toString();
             System.out.println("Your statement is: " + result);
-         }
-         catch (BadSyntaxException ex) {
+         } catch (BadSyntaxException ex) {
             System.out.println("Your statement is illegal");
          }
          System.out.print("Enter an SQL statement: ");
@@ -24,5 +24,3 @@ public class ParserTestActions {
       sc.close();
    }
 }
-
-
