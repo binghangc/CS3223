@@ -19,7 +19,7 @@ public class MetadataMgrTest {
       sch.addStringField("B", 9);
 
       // Part 1: Table Metadata
-      mdm.createTable("MyTable", sch, tx);      
+      mdm.createTable("MyTable", sch, tx);
       Layout layout = mdm.getLayout("MyTable", tx);
       int size = layout.slotSize();
       Schema sch2 = layout.schema();
@@ -38,11 +38,11 @@ public class MetadataMgrTest {
 
       // Part 2: Statistics Metadata
       TableScan ts = new TableScan(tx, "MyTable", layout);
-      for (int i=0; i<50;  i++) {
+      for (int i = 0; i < 50; i++) {
          ts.insert();
          int n = (int) Math.round(Math.random() * 50);
          ts.setInt("A", n);
-         ts.setString("B", "rec"+n);
+         ts.setString("B", "rec" + n);
       }
       StatInfo si = mdm.getStatInfo("MyTable", layout, tx);
       System.out.println("B(MyTable) = " + si.blocksAccessed());
@@ -50,17 +50,17 @@ public class MetadataMgrTest {
       System.out.println("V(MyTable,A) = " + si.distinctValues("A"));
       System.out.println("V(MyTable,B) = " + si.distinctValues("B"));
 
-      // Part 3: View Metadata     
+      // Part 3: View Metadata
       String viewdef = "select B from MyTable where A = 1";
       mdm.createView("viewA", viewdef, tx);
       String v = mdm.getViewDef("viewA", tx);
       System.out.println("View def = " + v);
 
       // Part 4: Index Metadata
-      mdm.createIndex("indexA", "MyTable", "A", tx);
-      mdm.createIndex("indexB", "MyTable", "B", tx);
-      Map<String,IndexInfo> idxmap = mdm.getIndexInfo("MyTable", tx);
-         
+      mdm.createIndex("indexA", "MyTable", "A", "hash", tx);
+      mdm.createIndex("indexB", "MyTable", "B", "btree", tx);
+      Map<String, IndexInfo> idxmap = mdm.getIndexInfo("MyTable", tx);
+
       IndexInfo ii = idxmap.get("A");
       System.out.println("B(indexA) = " + ii.blocksAccessed());
       System.out.println("R(indexA) = " + ii.recordsOutput());
@@ -75,4 +75,3 @@ public class MetadataMgrTest {
       tx.commit();
    }
 }
-

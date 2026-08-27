@@ -85,13 +85,17 @@ public class CreateStudentDB {
             stmt.executeUpdate(s + enrollvals[i]);
          System.out.println("ENROLL records inserted.");
 
-         s = "create index student_name on student (sname)";
+         s = "create index student_name on student (sname) using btree";
          stmt.executeUpdate(s);
          System.out.println("Index student_name created.");
 
-         s = "create index student_major on student (majorid)";
+         s = "create index student_major on student (majorid) using btree";
          stmt.executeUpdate(s);
          System.out.println("Index student_major created.");
+
+         s = "create index enroll_student on enroll (studentid) using btree";
+         stmt.executeUpdate(s);
+         System.out.println("Index enroll_student created.");
       } catch (SQLException e) {
          e.printStackTrace();
       }
