@@ -31,6 +31,7 @@ class IndexMgr {
          sch.addStringField("indexname", MAX_NAME);
          sch.addStringField("tablename", MAX_NAME);
          sch.addStringField("fieldname", MAX_NAME);
+         sch.addStringField("idxType", MAX_NAME);
          tblmgr.createTable("idxcat", sch, tx);
       }
       this.tblmgr = tblmgr;
