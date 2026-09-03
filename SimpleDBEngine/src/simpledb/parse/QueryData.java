@@ -12,14 +12,16 @@ public class QueryData {
    private List<String> fields;
    private Collection<String> tables;
    private Predicate pred;
+   private List<Sort> sorts;
    
    /**
     * Saves the field and table list and predicate.
     */
-   public QueryData(List<String> fields, Collection<String> tables, Predicate pred) {
+   public QueryData(List<String> fields, Collection<String> tables, Predicate pred, List<Sort> sorts) {
       this.fields = fields;
       this.tables = tables;
       this.pred = pred;
+      this.sorts = sorts;
    }
    
    /**
@@ -47,6 +49,13 @@ public class QueryData {
       return pred;
    }
    
+   /**
+    * @return the list of sort fields
+    */
+   public List<Sort> sorts() {
+	   return sorts;
+   }
+   
    public String toString() {
       String result = "select ";
       for (String fldname : fields)
@@ -59,6 +68,14 @@ public class QueryData {
       String predstring = pred.toString();
       if (!predstring.equals(""))
          result += " where " + predstring;
+
+      if (sorts.size() > 0) {
+    	  result += " order by ";
+      }
+      for (Sort sort : sorts) {
+    	  result += sort.toString() + ", ";
+      }
+      
       return result;
    }
 }

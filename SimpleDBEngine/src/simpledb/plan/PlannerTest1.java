@@ -42,6 +42,7 @@ public class PlannerTest1 {
       while (s.next())
          System.out.println(s.getString("b")); 
       s.close();
+      
       tx.commit();
    }
 }
