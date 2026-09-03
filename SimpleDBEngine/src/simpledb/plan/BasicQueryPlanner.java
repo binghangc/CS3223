@@ -48,7 +48,7 @@ public class BasicQueryPlanner implements QueryPlanner {
       p = new ProjectPlan(p, data.fields());
       
       //Step 5: Add a sorting plan for the table
-      p = new SortPlan(tx, p, data.fields());
+      p = new SortPlan(tx, p, data.sorts());
       
       return p;
    }

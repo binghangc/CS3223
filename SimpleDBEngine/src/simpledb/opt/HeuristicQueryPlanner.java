@@ -51,7 +51,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       currentplan = new ProjectPlan(currentplan, data.fields());
       
       //Step 5: Add a sorting plan for the table
-      currentplan = new SortPlan(tx, currentplan, data.fields());
+      currentplan = new SortPlan(tx, currentplan, data.sorts());
       
       return currentplan;
    }
