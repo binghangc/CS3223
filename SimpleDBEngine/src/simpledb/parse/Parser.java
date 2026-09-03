@@ -116,9 +116,15 @@ public class Parser {
          pred = predicate();
       }
       List<Sort> sorts = new ArrayList<Sort>();
-      if (lex.matchKeyword("order by")) {
-    	  lex.eatKeyword("order by");
-    	  sorts = sortList();    	  
+      if (lex.matchKeyword("order")) {
+    	  lex.eatKeyword("order");
+    	  lex.eatKeyword("by");
+    	  sorts = sortList();  
+      }
+      for (Sort s : sorts) {
+    	  String field = s.getField();
+    	  // The relevant sort field has to be added into the selected fields
+    	  if (!fields.contains(field)) fields.add(field); 
       }
       return new QueryData(fields, tables, pred, sorts);
    }

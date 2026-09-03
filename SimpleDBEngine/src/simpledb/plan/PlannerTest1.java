@@ -34,8 +34,17 @@ public class PlannerTest1 {
       s.close();
       
       
-      System.out.println("Selecting all records with 4<A<8");
-      qry = "select B from T1 where A>4 and A<8";
+      System.out.println("Selecting all records with 4<A<8 asc");
+      qry = "select B from T1 where A>4 and A<8 order by A";
+      p = planner.createQueryPlan(qry, tx);
+      s = p.open();
+      while (s.next())
+         System.out.println(s.getString("b")); 
+      s.close();
+      
+      
+      System.out.println("Selecting all records with 4<A<8 desc");
+      qry = "select B from T1 where A>4 and A<8 order by A desc";
       p = planner.createQueryPlan(qry, tx);
       s = p.open();
       while (s.next())

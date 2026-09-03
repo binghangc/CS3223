@@ -75,7 +75,7 @@ public class QueryData {
       for (Sort sort : sorts) {
     	  result += sort.toString() + ", ";
       }
-      
+      result = result.substring(0, result.length()-2); //remove final comma
       return result;
    }
 }

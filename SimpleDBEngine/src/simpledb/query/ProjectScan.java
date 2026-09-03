@@ -54,7 +54,7 @@ public class ProjectScan implements Scan {
    }
 
    public boolean hasField(String fldname) {
-      return fieldlist.contains(fldname);
+	   return fieldlist.contains(fldname);
    }
    
    public void close() {
