@@ -1,6 +1,5 @@
 package simpledb.plan;
 
-import java.io.*;
 import simpledb.server.SimpleDB;
 import simpledb.tx.Transaction;
 import simpledb.query.Scan;
