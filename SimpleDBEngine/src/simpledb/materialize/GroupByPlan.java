@@ -4,6 +4,7 @@ import java.util.*;
 import simpledb.tx.Transaction;
 import simpledb.record.Schema;
 import simpledb.plan.Plan;
+import simpledb.query.Sort;
 import simpledb.query.*;
 
 /**
@@ -26,9 +27,12 @@ public class GroupByPlan implements Plan {
     * @param groupfields the group fields
     * @param aggfns the aggregation functions
     * @param tx the calling transaction
-    */
+   */
    public GroupByPlan(Transaction tx, Plan p, List<String> groupfields, List<AggregationFn> aggfns) {
-      this.p = new SortPlan(tx, p, groupfields);
+      List<Sort> sortfields = new ArrayList<>();
+      for (String fldname : groupfields)
+         sortfields.add(new Sort(fldname, true));
+      this.p = new SortPlan(tx, p, sortfields);
       this.groupfields = groupfields;
       this.aggfns = aggfns;
       for (String fldname : groupfields)
