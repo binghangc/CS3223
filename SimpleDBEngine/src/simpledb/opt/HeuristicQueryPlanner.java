@@ -50,9 +50,9 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       // Step 4.  Project on the field names and return
       currentplan = new ProjectPlan(currentplan, data.fields());
       
-      //Step 5: Add a sorting plan for the table
-      System.out.println(data.fields());
-      currentplan = new SortPlan(tx, currentplan, data.sorts());
+      // Step 5: Sort only when the query has an order-by clause
+      if (!data.sorts().isEmpty())
+         currentplan = new SortPlan(tx, currentplan, data.sorts());
       
       return currentplan;
    }
