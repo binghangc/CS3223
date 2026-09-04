@@ -39,6 +39,8 @@ public class SortPlan implements Plan {
       Scan src = p.open();
       List<TempTable> runs = splitIntoRuns(src);
       src.close();
+      if (runs.isEmpty())
+         return new EmptyScan(sch);
       while (runs.size() > 2)
          runs = doAMergeIteration(runs);
       return new SortScan(runs, comp);
@@ -149,5 +151,39 @@ public class SortPlan implements Plan {
       for (String fldname : sch.fields())
          dest.setVal(fldname, src.getVal(fldname));
       return src.next();
+   }
+
+   private static class EmptyScan implements Scan {
+      private Schema sch;
+
+      public EmptyScan(Schema sch) {
+         this.sch = sch;
+      }
+
+      public void beforeFirst() {
+      }
+
+      public boolean next() {
+         return false;
+      }
+
+      public int getInt(String fldname) {
+         throw new RuntimeException("no current record");
+      }
+
+      public String getString(String fldname) {
+         throw new RuntimeException("no current record");
+      }
+
+      public Constant getVal(String fldname) {
+         throw new RuntimeException("no current record");
+      }
+
+      public boolean hasField(String fldname) {
+         return sch.hasField(fldname);
+      }
+
+      public void close() {
+      }
    }
 }

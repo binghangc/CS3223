@@ -70,12 +70,12 @@ public class QueryData {
          result += " where " + predstring;
 
       if (sorts.size() > 0) {
-    	  result += " order by ";
+         result += " order by ";
+         for (Sort sort : sorts) {
+            result += sort.toString() + ", ";
+         }
+         result = result.substring(0, result.length()-2); //remove final comma
       }
-      for (Sort sort : sorts) {
-    	  result += sort.toString() + ", ";
-      }
-      result = result.substring(0, result.length()-2); //remove final comma
       return result;
    }
 }

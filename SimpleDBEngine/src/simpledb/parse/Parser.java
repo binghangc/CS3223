@@ -121,11 +121,6 @@ public class Parser {
     	  lex.eatKeyword("by");
     	  sorts = sortList();  
       }
-      for (Sort s : sorts) {
-    	  String field = s.getField();
-    	  // The relevant sort field has to be added into the selected fields
-    	  if (!fields.contains(field)) fields.add(field); 
-      }
       return new QueryData(fields, tables, pred, sorts);
    }
 
