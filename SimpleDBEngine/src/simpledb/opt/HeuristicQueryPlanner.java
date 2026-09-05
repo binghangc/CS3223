@@ -48,6 +48,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
             currentplan = getLowestProductPlan(currentplan);
       }
 
+      // Step 4: If ordering is specified, add a sort plan. Otherwise leave it as normal.
       if (!data.sorts().isEmpty())
          currentplan = new SortPlan(tx, currentplan, data.sorts());
 
