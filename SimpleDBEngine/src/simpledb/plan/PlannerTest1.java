@@ -16,7 +16,7 @@ public class PlannerTest1 {
       planner.executeUpdate(cmd, tx);
 
       
-      int n = 200;
+      int n = 50;
       System.out.println("Inserting " + n + " random records.");
       for (int i=0; i<n; i++) {
          int a = (int) Math.round(Math.random() * 50);
@@ -34,7 +34,18 @@ public class PlannerTest1 {
       s.close();
       
       
-      System.out.println("Selecting all records with 4<A<8 asc");
+      // should be unordered
+      System.out.println("Selecting all records with 4<A<8");
+      qry = "select B from T1 where A>4 and A<8";
+      p = planner.createQueryPlan(qry, tx);
+      s = p.open();
+      while (s.next())
+         System.out.println(s.getString("b")); 
+      s.close();
+      
+      
+      // ordered by A ascending
+      System.out.println("Selecting all records with 4<A<8 in ascending order");
       qry = "select B from T1 where A>4 and A<8 order by A";
       p = planner.createQueryPlan(qry, tx);
       s = p.open();
@@ -43,12 +54,24 @@ public class PlannerTest1 {
       s.close();
       
       
+      // ordered by A descending
       System.out.println("Selecting all records with 4<A<8 desc");
       qry = "select B from T1 where A>4 and A<8 order by A desc";
       p = planner.createQueryPlan(qry, tx);
       s = p.open();
       while (s.next())
          System.out.println(s.getString("b")); 
+      s.close();
+      
+      
+      // ordered by B descending
+      System.out.println("Selecting all records with 4<A<8 desc");
+      qry = "select B from T1 where A>4 and A<8 order by A desc";
+      p = planner.createQueryPlan(qry, tx);
+      s = p.open();
+      while (s.next())
+         System.out.println(s.getString("b"));
+      
       s.close();
       
       tx.commit();
