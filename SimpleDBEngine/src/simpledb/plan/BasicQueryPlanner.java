@@ -44,9 +44,11 @@ public class BasicQueryPlanner implements QueryPlanner {
       // Step 3: Add a selection plan for the predicate
       p = new SelectPlan(p, data.pred());
 
+      // Step 4: If ordering is specified, add a sort plan. Otherwise leave it as normal.
       if (!data.sorts().isEmpty())
          p = new SortPlan(tx, p, data.sorts());
 
+      // Step 5: Project on the selected field names
       p = new ProjectPlan(p, data.fields());
 
       return p;
