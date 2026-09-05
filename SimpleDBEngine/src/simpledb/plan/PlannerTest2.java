@@ -10,9 +10,15 @@ public class PlannerTest2 {
       Transaction tx = db.newTx();
       Planner planner = db.planner();
       
+
+      
       String cmd = "create table T1(A int, B varchar(9))";
       planner.executeUpdate(cmd, tx);
-      int n = 200;
+      
+      cmd = "delete from T1"; // delete all entries from previous test
+      planner.executeUpdate(cmd, tx);
+      
+      int n = 20;
       System.out.println("Inserting " + n + " records into T1.");
       for (int i=0; i<n; i++) {
          int a = i;
@@ -23,6 +29,10 @@ public class PlannerTest2 {
 
       cmd = "create table T2(C int, D varchar(9))";
       planner.executeUpdate(cmd, tx);
+      
+      cmd = "delete from T2"; // delete all entries from previous test
+      planner.executeUpdate(cmd, tx);
+      
       System.out.println("Inserting " + n + " records into T2.");
       for (int i=0; i<n; i++) {
          int c = n-i-1;
@@ -32,6 +42,7 @@ public class PlannerTest2 {
       }
 
       String qry = "select B,D from T1,T2 where A=C";
+      System.out.println("Select records where A=C");
       Plan p = planner.createQueryPlan(qry, tx);
       Scan s = p.open();
       while (s.next())
