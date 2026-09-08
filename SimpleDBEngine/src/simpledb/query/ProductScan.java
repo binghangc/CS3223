@@ -7,6 +7,7 @@ package simpledb.query;
  */
 public class ProductScan implements Scan {
    private Scan s1, s2;
+   private Predicate joinpred;
 
    /**
     * Create a product scan having the two underlying scans.
@@ -16,6 +17,14 @@ public class ProductScan implements Scan {
    public ProductScan(Scan s1, Scan s2) {
       this.s1 = s1;
       this.s2 = s2;
+      this.joinpred = new Predicate();
+      beforeFirst();
+   }
+   
+   public ProductScan(Scan s1, Scan s2, Predicate joinpred) {
+      this.s1 = s1;
+      this.s2 = s2;
+      this.joinpred = joinpred;
       beforeFirst();
    }
 

@@ -72,7 +72,8 @@ public class MultibufferProductScan implements Scan {
 		while (!prodscan.next())
 			if (!useNextChunk())
 				return false;
-		return true;
+//		return true;
+		return joinpred.isSatisfied(prodscan);
 	}
 
 	/**
@@ -133,8 +134,8 @@ public class MultibufferProductScan implements Scan {
 			end = filesize - 1;
 		rhsscan = new ChunkScan(tx, filename, layout, nextblknum, end); // outer loop
 		lhsscan.beforeFirst(); // inner loop
-		prodscan = new ProductScan(lhsscan, rhsscan);
-//		prodscan = new SelectScan(new ProductScan(lhsscan, rhsscan), joinpred);
+		prodscan = new SelectScan(new ProductScan(lhsscan, rhsscan), joinpred);
+//		prodscan = new ProductScan(lhsscan, rhsscan);
 		nextblknum = end + 1;
 		return true;
 	}

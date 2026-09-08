@@ -106,13 +106,14 @@ class TablePlanner {
       return null;
    }
    
-   private Plan makeProductJoin(Plan current, Schema currsch) {
-      Plan p = makeProductPlan(current);
-      return addJoinPred(p, currsch);
-   }
+//   private Plan makeProductJoin(Plan current, Schema currsch) {
+//      Plan p = makeProductPlan(current);
+//      return addJoinPred(p, currsch);
+//   }
    
-   private Plan makeProductJoin(Plan current, Schema currsch, Predicate joinpred) {
+   private Plan makeProductJoin(Plan current, Schema currsch) {
 	  Plan p = addSelectPred(myplan);
+	  Predicate joinpred = mypred.selectSubPred(myschema);
       return new MultibufferProductPlan(tx, current, p, joinpred);
    }
 	   

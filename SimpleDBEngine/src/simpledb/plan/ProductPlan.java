@@ -29,13 +29,13 @@ public class ProductPlan implements Plan {
       schema.addAll(p2.schema());
    }
    
-   public ProductPlan(Plan p1, Plan p2, Predicate join) {
-	   this.p1 = p1;
-	   this.p2 = p2;
-	   this.join = join;
-	   schema.addAll(p1.schema());
-	   schema.addAll(p2.schema());
-   }
+//   public ProductPlan(Plan p1, Plan p2, Predicate join) {
+//	   this.p1 = p1;
+//	   this.p2 = p2;
+//	   this.join = join;
+//	   schema.addAll(p1.schema());
+//	   schema.addAll(p2.schema());
+//   }
    
    /**
     * Creates a product scan for this query.
