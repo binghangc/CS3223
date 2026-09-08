@@ -111,6 +111,12 @@ class TablePlanner {
       return addJoinPred(p, currsch);
    }
    
+   private Plan makeProductJoin(Plan current, Schema currsch, Predicate joinpred) {
+	  Plan p = addSelectPred(myplan);
+      return new MultibufferProductPlan(tx, current, p, joinpred);
+   }
+	   
+   
    private Plan addSelectPred(Plan p) {
       Predicate selectpred = mypred.selectSubPred(myschema);
       if (selectpred != null)

@@ -1,6 +1,8 @@
 package simpledb.plan;
 
+import simpledb.query.Predicate;
 import simpledb.query.ProductScan;
+import simpledb.query.SelectScan;
 import simpledb.query.Scan;
 import simpledb.record.Schema;
 
@@ -10,6 +12,7 @@ import simpledb.record.Schema;
   */
 public class ProductPlan implements Plan {
    private Plan p1, p2;
+   private Predicate join;
    private Schema schema = new Schema();
    
    /**
@@ -21,8 +24,17 @@ public class ProductPlan implements Plan {
    public ProductPlan(Plan p1, Plan p2) {
       this.p1 = p1;
       this.p2 = p2;
+      this.join = new Predicate();
       schema.addAll(p1.schema());
       schema.addAll(p2.schema());
+   }
+   
+   public ProductPlan(Plan p1, Plan p2, Predicate join) {
+	   this.p1 = p1;
+	   this.p2 = p2;
+	   this.join = join;
+	   schema.addAll(p1.schema());
+	   schema.addAll(p2.schema());
    }
    
    /**
@@ -32,7 +44,7 @@ public class ProductPlan implements Plan {
    public Scan open() {
       Scan s1 = p1.open();
       Scan s2 = p2.open();
-      return new ProductScan(s1, s2);
+      return new SelectScan(new ProductScan(s1, s2), join);
    }
    
    /**

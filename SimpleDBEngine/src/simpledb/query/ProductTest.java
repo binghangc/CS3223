@@ -3,7 +3,6 @@ package simpledb.query;
 import simpledb.server.SimpleDB;
 import simpledb.tx.Transaction;
 import simpledb.record.*;
-import simpledb.plan.*;
 
 public class ProductTest {
    public static void main(String[] args) throws Exception {

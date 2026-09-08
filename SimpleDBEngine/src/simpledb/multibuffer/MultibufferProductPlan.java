@@ -14,6 +14,7 @@ import simpledb.plan.Plan;
 public class MultibufferProductPlan implements Plan {
    private Transaction tx;
    private Plan lhs, rhs;
+   private Predicate joinpred;
    private Schema schema = new Schema();
 
    /**
@@ -26,9 +27,22 @@ public class MultibufferProductPlan implements Plan {
       this.tx = tx;
       this.lhs = new MaterializePlan(tx, lhs);
       this.rhs = rhs;
+      this.joinpred = new Predicate();
       schema.addAll(lhs.schema());
       schema.addAll(rhs.schema());
    }
+   
+   /**
+    * Creates a product plan with the specified join predicates.
+    */
+   public MultibufferProductPlan(Transaction tx, Plan lhs, Plan rhs, Predicate joinpred) {
+	      this.tx = tx;
+	      this.lhs = new MaterializePlan(tx, lhs);
+	      this.rhs = rhs;
+	      this.joinpred = joinpred;
+	      schema.addAll(lhs.schema());
+	      schema.addAll(rhs.schema());
+	   }
 
    /**
     * A scan for this query is created and returned, as follows.
@@ -44,7 +58,7 @@ public class MultibufferProductPlan implements Plan {
    public Scan open() {
       Scan leftscan = lhs.open();
       TempTable tt = copyRecordsFrom(rhs);
-      return new MultibufferProductScan(tx, leftscan, tt.tableName(), tt.getLayout());
+      return new MultibufferProductScan(tx, leftscan, tt.tableName(), tt.getLayout(), joinpred);
    }
 
    /**
