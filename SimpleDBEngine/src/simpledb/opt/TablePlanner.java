@@ -94,11 +94,21 @@ class TablePlanner {
    }
    
    private Plan makeIndexJoin(Plan current, Schema currsch) {
+	   // diagnostic print statements to check if index join is running correctly
+	   System.out.println("Trying index join. Inner table fields: " + myschema.fields());
+	   System.out.println("Available indexes " + indexes.keySet());
+	   System.out.println("Outer fields " + currsch.fields());
+		   
       for (String fldname : indexes.keySet()) {
          String outerfield = mypred.equatesWithField(fldname);
          if (outerfield != null && currsch.hasField(outerfield)) {
             IndexInfo ii = indexes.get(fldname);
             Plan p = new IndexJoinPlan(current, myplan, ii, outerfield);
+            
+            // Checks if planner actually selected the index join
+            System.out.println("Using IndexJoinPlan on " + fldname + " with outer field " + outerfield);
+            // Print statement to check if planner actually selected the index join
+            
             p = addSelectPred(p);
             return addJoinPred(p, currsch);
          }
@@ -113,7 +123,7 @@ class TablePlanner {
    
    private Plan makeProductJoin(Plan current, Schema currsch) {
 	  Plan p = addSelectPred(myplan);
-	  Predicate joinpred = mypred.selectSubPred(myschema);
+	  Predicate joinpred = mypred.joinSubPred(currsch, myschema);
       return new MultibufferProductPlan(tx, current, p, joinpred);
    }
 	   

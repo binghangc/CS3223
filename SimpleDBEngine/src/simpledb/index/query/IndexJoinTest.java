@@ -26,11 +26,19 @@ public class IndexJoinTest {
 		Plan studentplan = new TablePlan(tx, "student", mdm);
 		Plan enrollplan = new TablePlan(tx, "enroll", mdm);
 
-		// Two different ways to use the index in simpledb:
+		// 1. Demonstrates that index can retrieve matching inner records
+		System.out.println("=== Manual index join ===");
 		useIndexManually(studentplan, enrollplan, sidIdx, "sid");		
+		
+		// 2. Demonstrates that IndexJoinPlan and IndexJoinScan produce same join results
+		System.out.println("=== Direct index join plan ===");
 		useIndexScan(studentplan, enrollplan, sidIdx, "sid");
-
-		tx.commit();
+		
+		// 3. Demonstrates how the HeuristicQueryPlanner helps to select the index join
+		//    automatically!
+		System.out.println("=== HeuristicQueryPlanner ===");
+		useQueryPlanner(db, tx);
+		tx.commit(); 
 	}
 
 	private static void useIndexManually(Plan p1, Plan p2, IndexInfo ii, String joinfield) {
@@ -44,12 +52,14 @@ public class IndexJoinTest {
 		while (s1.next()) {
 			Constant c = s1.getVal(joinfield);
 			idx.beforeFirst(c);
+			
 			while (idx.next()) {
 				// Use each datarid to go to the corresponding Enroll record.
 				RID datarid = idx.getDataRid();
 				s2.moveToRid(datarid);  // table scans can move to a specified RID.
 				System.out.println(s2.getString("grade"));
 			}
+			
 		}
 		idx.close();
 		s1.close();
@@ -64,6 +74,19 @@ public class IndexJoinTest {
 		while (s.next()) {
 			System.out.println(s.getString("grade"));
 		}
+		s.close();
+	}
+	
+	private static void useQueryPlanner(SimpleDB db, Transaction tx) {
+		String qry = "select grade " + "from student, enroll " + "where sid = studentid";
+		
+		Plan p = db.planner().createQueryPlan(qry, tx);
+		Scan s = p.open();
+		
+		while (s.next()) {
+			System.out.println(s.getString("grade"));
+		}
+		
 		s.close();
 	}
 }

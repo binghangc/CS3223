@@ -14,6 +14,18 @@ public class CreateStudentDB {
          String s = "create table STUDENT(SId int, SName varchar(10), MajorId int, GradYear int)";
          stmt.executeUpdate(s);
          System.out.println("Table STUDENT created.");
+         
+         s = "create index student_name on student (sname) using btree";
+         stmt.executeUpdate(s);
+         System.out.println("Index student_name created.");
+         
+         s = "create index student_major on student (majorid) using btree";
+         stmt.executeUpdate(s);
+         System.out.println("Index student_major created.");
+         
+         s = "create index student_sid on student (sid) using btree";
+         stmt.executeUpdate(s);
+         System.out.println("Index student_sid created.");
 
          s = "insert into STUDENT(SId, SName, MajorId, GradYear) values ";
          String[] studvals = { "(1, 'joe', 10, 2021)",
@@ -73,6 +85,11 @@ public class CreateStudentDB {
          s = "create table ENROLL(EId int, StudentId int, SectionId int, Grade varchar(2))";
          stmt.executeUpdate(s);
          System.out.println("Table ENROLL created.");
+         
+         s = "create index enroll_student on enroll (studentid) using btree";
+         stmt.executeUpdate(s);
+         System.out.println("Index enroll_student created.");
+
 
          s = "insert into ENROLL(EId, StudentId, SectionId, Grade) values ";
          String[] enrollvals = { "(14, 1, 13, 'A')",
@@ -84,18 +101,6 @@ public class CreateStudentDB {
          for (int i = 0; i < enrollvals.length; i++)
             stmt.executeUpdate(s + enrollvals[i]);
          System.out.println("ENROLL records inserted.");
-
-         s = "create index student_name on student (sname) using btree";
-         stmt.executeUpdate(s);
-         System.out.println("Index student_name created.");
-
-         s = "create index student_major on student (majorid) using btree";
-         stmt.executeUpdate(s);
-         System.out.println("Index student_major created.");
-
-         s = "create index enroll_student on enroll (studentid) using btree";
-         stmt.executeUpdate(s);
-         System.out.println("Index enroll_student created.");
 
       } catch (SQLException e) {
          e.printStackTrace();
