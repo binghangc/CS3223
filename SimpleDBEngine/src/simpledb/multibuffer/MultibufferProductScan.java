@@ -69,11 +69,15 @@ public class MultibufferProductScan implements Scan {
 	 * @see simpledb.query.Scan#next()
 	 */
 	public boolean next() {
-		while (!prodscan.next())
-			if (!useNextChunk())
-				return false;
-//		return true;
-		return joinpred.isSatisfied(prodscan);
+		while (true) {
+			while (!prodscan.next()) {
+				if (!useNextChunk())
+					return false;
+			}
+			
+			if (joinpred.isSatisfied(prodscan)) 
+				return true;
+			}
 	}
 
 	/**
@@ -134,8 +138,8 @@ public class MultibufferProductScan implements Scan {
 			end = filesize - 1;
 		rhsscan = new ChunkScan(tx, filename, layout, nextblknum, end); // outer loop
 		lhsscan.beforeFirst(); // inner loop
-		prodscan = new SelectScan(new ProductScan(lhsscan, rhsscan), joinpred);
-//		prodscan = new ProductScan(lhsscan, rhsscan);
+//		prodscan = new SelectScan(new ProductScan(lhsscan, rhsscan), joinpred);
+		prodscan = new ProductScan(lhsscan, rhsscan);
 		nextblknum = end + 1;
 		return true;
 	}

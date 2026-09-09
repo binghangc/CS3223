@@ -38,7 +38,9 @@ public class HeuristicQueryPlanner implements QueryPlanner {
 
       // Step 2: Choose the lowest-size plan to begin the join order
       Plan currentplan = getLowestSelectPlan();
-
+      
+      System.out.println("Starting plan: " + currentplan.schema().fields());
+      
       // Step 3: Repeatedly add a plan to the join order
       while (!tableplanners.isEmpty()) {
          Plan p = getLowestJoinPlan(currentplan);
