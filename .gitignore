@@ -15,3 +15,7 @@ bin/
 # Runtime/generated SimpleDB database files
 studentdb/
 */studentdb/
+multibufferproducttest/
+*/multibufferproducttest/
+plannertest2/
+*/plannertest2/

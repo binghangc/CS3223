@@ -130,6 +130,7 @@ class TablePlanner {
          String outerfield = mypred.equatesWithField(fldname);
          if (outerfield != null && currsch.hasField(outerfield)) {
             Plan rhs = addSelectPred(myplan);
+            System.out.println("Using MergeJoinPlan on " + outerfield + " = " + fldname);
             Plan p = new MergeJoinPlan(tx, current, rhs, outerfield, fldname);
             return addJoinPred(p, currsch);
          }
