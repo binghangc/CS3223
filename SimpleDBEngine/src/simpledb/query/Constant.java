@@ -40,4 +40,8 @@ public class Constant implements Comparable<Constant> {
    public String toString() {
       return (ival != null) ? ival.toString() : sval.toString();
    }   
+   
+   public boolean isInt() {
+	   return ival != null;  // if ival is not null, it is an integer 
+   }
 }

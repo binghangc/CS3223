@@ -2,6 +2,7 @@ package simpledb.parse;
 
 import java.util.*;
 
+import simpledb.materialize.*;
 import simpledb.query.*;
 import simpledb.record.*;
 
@@ -107,31 +108,116 @@ public class Parser {
 
    public QueryData query() {
       lex.eatKeyword("select");
-      List<String> fields = selectList();
+      
+      List<String> fields = new ArrayList<>();
+      List<AggregationFn> aggfns = new ArrayList<>();
+      
+      selectList(fields, aggfns);
+      
       lex.eatKeyword("from");
       Collection<String> tables = tableList();
+      
       Predicate pred = new Predicate();
       if (lex.matchKeyword("where")) {
          lex.eatKeyword("where");
          pred = predicate();
       }
+      
+      List<String> groupfields = new ArrayList<>();
+      if (lex.matchKeyword("group")) {
+    	  lex.eatKeyword("group");
+    	  lex.eatKeyword("by");
+    	  groupfields = fieldList();
+      }
+      
       List<Sort> sorts = new ArrayList<Sort>();
       if (lex.matchKeyword("order")) {
     	  lex.eatKeyword("order");
     	  lex.eatKeyword("by");
     	  sorts = sortList();  
       }
-      return new QueryData(fields, tables, pred, sorts);
+      
+      return new QueryData(fields, tables, pred, sorts, groupfields, aggfns);
    }
-
-   private List<String> selectList() {
-      List<String> L = new ArrayList<String>();
-      L.add(field());
+   
+   private AggregationFn aggregationFn() {
+	   String fn;
+	   
+	   if (lex.matchKeyword("sum")) {
+		   lex.eatKeyword("sum");
+		   fn = "sum";
+	   }
+	   
+	   else if (lex.matchKeyword("count")) {
+		   lex.eatKeyword("count");
+		   fn = "count";
+	   }
+	   
+	   else if (lex.matchKeyword("avg")) {
+		   lex.eatKeyword("avg");
+		   fn = "avg";
+	   }
+	   
+	   else if (lex.matchKeyword("min")) {
+		   lex.eatKeyword("min");
+		   fn = "min";
+	   }
+	   
+	   else if (lex.matchKeyword("max")) {
+		   lex.eatKeyword("max");
+		   fn = "max";
+	   }
+	   
+	   else {
+		   throw new BadSyntaxException();
+	   }
+	   
+	   lex.eatDelim('(');
+	   String fldname = field();
+	   lex.eatDelim(')');
+	   
+	   if (fn.equals("sum")) {
+		   return new SumFn(fldname);
+	   } 
+	   
+	   else if (fn.equals("count")) {
+		   return new CountFn(fldname);
+	   }
+	   
+	   else if (fn.equals("avg")) {
+		   return new AvgFn(fldname);
+	   }
+	   
+	   else if (fn.equals("min")) {
+		   return new MinFn(fldname);
+	   }
+	   
+	   else if (fn.equals("max")) {
+		   return new MaxFn(fldname);
+	   }
+	   
+	   else {
+		   throw new BadSyntaxException();
+	   }
+   }
+   
+   private boolean isAggregationFn() {
+	   return lex.matchKeyword("sum") || 
+			  lex.matchKeyword("count") ||
+			  lex.matchKeyword("avg") ||
+			  lex.matchKeyword("min") ||
+			  lex.matchKeyword("max");
+   }
+   
+   private void selectList(List<String> fields, List<AggregationFn> aggfns) {
+	   if (lex.matchId()) fields.add(field());
+	   else if (isAggregationFn()) aggfns.add(aggregationFn());
+	   else throw new BadSyntaxException();
+	   
       if (lex.matchDelim(',')) {
          lex.eatDelim(',');
-         L.addAll(selectList());
+         selectList(fields, aggfns);
       }
-      return L;
    }
 
    private Collection<String> tableList() {
