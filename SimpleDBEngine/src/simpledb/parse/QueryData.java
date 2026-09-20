@@ -3,6 +3,7 @@ package simpledb.parse;
 import java.util.*;
 
 import simpledb.query.*;
+import simpledb.materialize.*;
 
 /**
  * Data for the SQL <i>select</i> statement.
@@ -13,16 +14,31 @@ public class QueryData {
    private Collection<String> tables;
    private Predicate pred;
    private List<Sort> sorts;
+   private List<String> groupfields;
+   private List<AggregationFn> aggfns;
    
    /**
     * Saves the field and table list and predicate.
     */
-   public QueryData(List<String> fields, Collection<String> tables, Predicate pred, List<Sort> sorts) {
+   public QueryData(List<String> fields, Collection<String> tables, Predicate pred, List<Sort> sorts,
+		   			List<String> groupfields, List<AggregationFn> aggfns) {
       this.fields = fields;
       this.tables = tables;
       this.pred = pred;
       this.sorts = sorts;
+      this.groupfields = groupfields;
+      this.aggfns = aggfns;
    }
+   
+   // backwards compatibility
+   public QueryData(List<String> fields, Collection<String> tables, Predicate pred, List<Sort> sorts) {
+	   this.fields = fields;
+	   this.tables = tables;
+	   this.pred = pred;
+	   this.sorts = sorts;
+	   this.groupfields = new ArrayList<>();
+	   this.aggfns = new ArrayList<>();
+	}
    
    /**
     * Returns the fields mentioned in the select clause.
