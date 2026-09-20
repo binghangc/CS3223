@@ -38,7 +38,7 @@ public class QueryData {
 	   this.sorts = sorts;
 	   this.groupfields = new ArrayList<>();
 	   this.aggfns = new ArrayList<>();
-   }
+	}
    
    /**
     * Returns the fields mentioned in the select clause.
