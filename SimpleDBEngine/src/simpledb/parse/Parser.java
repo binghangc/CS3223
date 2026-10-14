@@ -23,17 +23,17 @@ public class Parser {
    public String field() {
       return lex.eatId();
    }
-   
+
    public Sort sortField() {
-	   String field = field();
-	   boolean isAsc = true;
-	   if (lex.matchKeyword("asc")) {
-		   lex.eatKeyword("asc");
-	   } else if (lex.matchKeyword("desc")) {
-		   lex.eatKeyword("desc");
-		   isAsc = false;
-	   }
-	   return new Sort(field, isAsc);
+      String field = isAggregationFn() ? aggregationFn().fieldName() : field();
+      boolean isAsc = true;
+      if (lex.matchKeyword("asc")) {
+         lex.eatKeyword("asc");
+      } else if (lex.matchKeyword("desc")) {
+         lex.eatKeyword("desc");
+         isAsc = false;
+      }
+      return new Sort(field, isAsc);
    }
 
    public Constant constant() {
@@ -108,112 +108,124 @@ public class Parser {
 
    public QueryData query() {
       lex.eatKeyword("select");
-      
+
       List<String> fields = new ArrayList<>();
       List<AggregationFn> aggfns = new ArrayList<>();
-      
+
       selectList(fields, aggfns);
-      
+
       lex.eatKeyword("from");
       Collection<String> tables = tableList();
-      
+
       Predicate pred = new Predicate();
       if (lex.matchKeyword("where")) {
          lex.eatKeyword("where");
          pred = predicate();
       }
-      
+
       List<String> groupfields = new ArrayList<>();
       if (lex.matchKeyword("group")) {
-    	  lex.eatKeyword("group");
-    	  lex.eatKeyword("by");
-    	  groupfields = fieldList();
+         lex.eatKeyword("group");
+         lex.eatKeyword("by");
+         groupfields = fieldList();
       }
-      
+
       List<Sort> sorts = new ArrayList<Sort>();
       if (lex.matchKeyword("order")) {
-    	  lex.eatKeyword("order");
-    	  lex.eatKeyword("by");
-    	  sorts = sortList();  
+         lex.eatKeyword("order");
+         lex.eatKeyword("by");
+         sorts = sortList();
       }
-      
+
       return new QueryData(fields, tables, pred, sorts, groupfields, aggfns);
    }
-   
+
    private AggregationFn aggregationFn() {
-	   String fn;
-	   
-	   if (lex.matchKeyword("sum")) {
-		   lex.eatKeyword("sum");
-		   fn = "sum";
-	   }
-	   
-	   else if (lex.matchKeyword("count")) {
-		   lex.eatKeyword("count");
-		   fn = "count";
-	   }
-	   
-	   else if (lex.matchKeyword("avg")) {
-		   lex.eatKeyword("avg");
-		   fn = "avg";
-	   }
-	   
-	   else if (lex.matchKeyword("min")) {
-		   lex.eatKeyword("min");
-		   fn = "min";
-	   }
-	   
-	   else if (lex.matchKeyword("max")) {
-		   lex.eatKeyword("max");
-		   fn = "max";
-	   }
-	   
-	   else {
-		   throw new BadSyntaxException();
-	   }
-	   
-	   lex.eatDelim('(');
-	   String fldname = field();
-	   lex.eatDelim(')');
-	   
-	   if (fn.equals("sum")) {
-		   return new SumFn(fldname);
-	   } 
-	   
-	   else if (fn.equals("count")) {
-		   return new CountFn(fldname);
-	   }
-	   
-	   else if (fn.equals("avg")) {
-		   return new AvgFn(fldname);
-	   }
-	   
-	   else if (fn.equals("min")) {
-		   return new MinFn(fldname);
-	   }
-	   
-	   else if (fn.equals("max")) {
-		   return new MaxFn(fldname);
-	   }
-	   
-	   else {
-		   throw new BadSyntaxException();
-	   }
+      String fn;
+
+      if (lex.matchKeyword("sum")) {
+         lex.eatKeyword("sum");
+         fn = "sum";
+      }
+
+      else if (lex.matchKeyword("count")) {
+         lex.eatKeyword("count");
+         fn = "count";
+      }
+
+      else if (lex.matchKeyword("avg")) {
+         lex.eatKeyword("avg");
+         fn = "avg";
+      }
+
+      else if (lex.matchKeyword("min")) {
+         lex.eatKeyword("min");
+         fn = "min";
+      }
+
+      else if (lex.matchKeyword("max")) {
+         lex.eatKeyword("max");
+         fn = "max";
+      }
+
+      else {
+         throw new BadSyntaxException();
+      }
+
+      lex.eatDelim('(');
+      String fldname;
+      if (fn.equals("count") && lex.matchDelim('*')) {
+         lex.eatDelim('*');
+         fldname = "*";
+      } else {
+         fldname = field();
+      }
+      lex.eatDelim(')');
+
+      if (fn.equals("sum")) {
+         return new SumFn(fldname);
+      }
+
+      else if (fn.equals("count")) {
+         return new CountFn(fldname);
+      }
+
+      else if (fn.equals("avg")) {
+         return new AvgFn(fldname);
+      }
+
+      else if (fn.equals("min")) {
+         return new MinFn(fldname);
+      }
+
+      else if (fn.equals("max")) {
+         return new MaxFn(fldname);
+      }
+
+      else {
+         throw new BadSyntaxException();
+      }
    }
-   
+
    private boolean isAggregationFn() {
-	   return lex.matchKeyword("sum") || 
-			  lex.matchKeyword("count") ||
-			  lex.matchKeyword("avg") ||
-			  lex.matchKeyword("min") ||
-			  lex.matchKeyword("max");
+      return lex.matchKeyword("sum") ||
+            lex.matchKeyword("count") ||
+            lex.matchKeyword("avg") ||
+            lex.matchKeyword("min") ||
+            lex.matchKeyword("max");
    }
-   
+
    private void selectList(List<String> fields, List<AggregationFn> aggfns) {
-	   if (lex.matchId()) fields.add(field());
-	   else if (isAggregationFn()) aggfns.add(aggregationFn());
-	   else throw new BadSyntaxException();
-	   
+      if (lex.matchId()) {
+         fields.add(field());
+      } else if (isAggregationFn()) {
+         AggregationFn fn = aggregationFn();
+         aggfns.add(fn);
+         fields.add(fn.fieldName());
+      } else {
+         throw new BadSyntaxException();
+      }
+
       if (lex.matchDelim(',')) {
          lex.eatDelim(',');
          selectList(fields, aggfns);
@@ -229,18 +241,18 @@ public class Parser {
       }
       return L;
    }
-   
+
    private List<Sort> sortList() {
-	   List<Sort> L = new ArrayList<Sort>();
-	   
-	   L.add(sortField());
+      List<Sort> L = new ArrayList<Sort>();
 
-	   while(lex.matchDelim(',')) {
-		   lex.eatDelim(',');
-		   L.add(sortField());
-	   }
+      L.add(sortField());
 
-	   return L;
+      while (lex.matchDelim(',')) {
+         lex.eatDelim(',');
+         L.add(sortField());
+      }
+
+      return L;
    }
 
    // Methods for parsing the various update commands

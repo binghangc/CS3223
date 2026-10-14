@@ -18,12 +18,14 @@ public class SumFn implements AggregationFn {
       this.fldname = fldname;
    }
    
+   public String inputField() { return fldname; }
+
+   public AggregationFn newInstance() { return new SumFn(fldname); }
+
    /**
     * Start a new sum.
     * Since SimpleDB does not support null values,
-    * every record will be counted,
-    * regardless of the field.
-    * The current count is thus set to 1.
+    * the current sum is set to the field value of the first record.
     * @see simpledb.materialize.AggregationFn#processFirst(simpledb.query.Scan)
     */
    public void processFirst(Scan s) {
@@ -32,8 +34,7 @@ public class SumFn implements AggregationFn {
    
    /**
     * Since SimpleDB does not support null values,
-    * this method always increments the count,
-    * regardless of the field.
+    * this method always adds the field value to the current sum.
     * @see simpledb.materialize.AggregationFn#processNext(simpledb.query.Scan)
     */
    public void processNext(Scan s) {

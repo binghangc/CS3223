@@ -18,6 +18,10 @@ public class MinFn implements AggregationFn {
       this.fldname = fldname;
    }
    
+   public String inputField() { return fldname; }
+
+   public AggregationFn newInstance() { return new MinFn(fldname); }
+
    /**
     * Start a new minimum to be the 
     * field value in the current record.

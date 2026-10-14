@@ -14,6 +14,7 @@ public class GroupByScan implements Scan {
    private List<AggregationFn> aggfns;
    private GroupValue groupval;
    private boolean moregroups;
+   private boolean emptyGlobal, emptyResult;
    
    /**
     * Create a groupby scan, given a grouped table scan.
@@ -39,6 +40,9 @@ public class GroupByScan implements Scan {
    public void beforeFirst() {
       s.beforeFirst();
       moregroups = s.next();
+      emptyGlobal = !moregroups && groupfields.isEmpty();
+      emptyResult = false;
+      groupval = null;
    }
    
    /**
@@ -53,6 +57,11 @@ public class GroupByScan implements Scan {
     * @see simpledb.query.Scan#next()
     */
    public boolean next() {
+      if (emptyGlobal) {
+         emptyGlobal = false;
+         emptyResult = true;
+         return true;
+      }
       if (!moregroups)
          return false;
       for (AggregationFn fn : aggfns)
@@ -89,7 +98,7 @@ public class GroupByScan implements Scan {
          return groupval.getVal(fldname);
       for (AggregationFn fn : aggfns)
          if (fn.fieldName().equals(fldname))
-         return fn.value();
+         return emptyResult ? fn.emptyValue() : fn.value();
       throw new RuntimeException("field " + fldname + " not found.");
    }
    

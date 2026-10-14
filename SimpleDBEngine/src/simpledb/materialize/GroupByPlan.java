@@ -33,15 +33,30 @@ public class GroupByPlan implements Plan {
       List<Sort> sortfields = new ArrayList<>();
 
       for (String fldname : groupfields) {
+         if (!p.schema().hasField(fldname))
+            throw new IllegalArgumentException("Unknown GROUP BY field: " + fldname);
          sortfields.add(new Sort(fldname, true));
       }
-      this.p = new SortPlan(tx, p, sortfields);
+      this.p = groupfields.isEmpty() ? p : new SortPlan(tx, p, sortfields);
       this.groupfields = groupfields;
       this.aggfns = aggfns;
       for (String fldname : groupfields)
          sch.add(fldname, p.schema());
-      for (AggregationFn fn : aggfns)
-         sch.addIntField(fn.fieldName());
+
+      for (AggregationFn fn : aggfns) {
+         String field = fn.inputField();
+         if (!field.equals("*") && !p.schema().hasField(field))
+            throw new IllegalArgumentException("Unknown aggregate field: " + field);
+         if ((fn instanceof SumFn || fn instanceof AvgFn)
+               && p.schema().type(field) != java.sql.Types.INTEGER)
+            throw new IllegalArgumentException("SUM and AVG require integer fields: " + field);
+         if (sch.hasField(fn.fieldName()))
+            continue;
+         if (fn instanceof MinFn || fn instanceof MaxFn)
+            sch.addField(fn.fieldName(), p.schema().type(field), p.schema().length(field));
+         else
+            sch.addIntField(fn.fieldName());
+      }
    }
 
    /**
@@ -53,7 +68,10 @@ public class GroupByPlan implements Plan {
     */
    public Scan open() {
       Scan s = p.open();
-      return new GroupByScan(s, groupfields, aggfns);
+      List<AggregationFn> functions = new ArrayList<>();
+      for (AggregationFn fn : aggfns)
+         functions.add(fn.newInstance());
+      return new GroupByScan(s, groupfields, functions);
    }
 
    /**
@@ -77,10 +95,12 @@ public class GroupByPlan implements Plan {
     * @see simpledb.plan.Plan#recordsOutput()
     */
    public int recordsOutput() {
-      int numgroups = 1;
+      if (groupfields.isEmpty())
+         return 1;
+      long numgroups = 1;
       for (String fldname : groupfields)
-         numgroups *= p.distinctValues(fldname);
-      return numgroups;
+         numgroups = Math.min(p.recordsOutput(), numgroups * p.distinctValues(fldname));
+      return (int) numgroups;
    }
 
    /**

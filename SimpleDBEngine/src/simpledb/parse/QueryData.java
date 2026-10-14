@@ -88,8 +88,13 @@ public class QueryData {
    
    public String toString() {
       String result = "select ";
-      for (String fldname : fields)
-         result += fldname + ", ";
+      for (String fldname : fields) {
+         String expression = fldname;
+         for (AggregationFn fn : aggfns)
+            if (fn.fieldName().equals(fldname))
+               expression = fn.toSql();
+         result += expression + ", ";
+      }
       result = result.substring(0, result.length()-2); //remove final comma
       result += " from ";
       for (String tblname : tables)
@@ -98,6 +103,13 @@ public class QueryData {
       String predstring = pred.toString();
       if (!predstring.equals(""))
          result += " where " + predstring;
+
+      if (groupfields.size() > 0) {
+         result += " group by ";
+         for (String fldname : groupfields)
+            result += fldname + ", ";
+         result = result.substring(0, result.length()-2); //remove final comma
+      }
 
       if (sorts.size() > 0) {
          result += " order by ";
