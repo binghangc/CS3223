@@ -88,4 +88,16 @@ public class ProductPlan implements Plan {
    public Schema schema() {
       return schema;
    }
+   
+   /**
+    * Returns the String of this product plan + its children plans
+    */
+   public String printQueryPlan(int depth) {
+	   String tab = "";
+	   for (int i = 0; i < depth; ++i) {
+		   tab += " ";
+	   }
+	   String children = p1.printQueryPlan(depth+1) + p2.printQueryPlan(depth+1);
+	   return tab + "×" + '\n' + children;
+   }
 }

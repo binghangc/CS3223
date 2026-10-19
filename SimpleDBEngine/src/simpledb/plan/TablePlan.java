@@ -70,4 +70,15 @@ public class TablePlan implements Plan {
    public Schema schema() {
       return layout.schema();
    }
+   
+   /**
+    * Returns this table's name to be printed.
+    */
+   public String printQueryPlan(int depth) {
+	   String ans = "";
+	   for (int i = 0; i < depth; ++i) {
+		   ans += " ";
+	   }
+	   return ans + this.tblname + '\n';
+   }
 }

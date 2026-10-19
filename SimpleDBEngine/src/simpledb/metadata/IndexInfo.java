@@ -100,6 +100,10 @@ public class IndexInfo {
    public int distinctValues(String fname) {
       return fldname.equals(fname) ? 1 : si.distinctValues(fldname);
    }
+   
+   public String toString() {
+	   return this.idxType + " index on " + this.fldname;
+   }
 
    /**
     * Return the layout of the index records.

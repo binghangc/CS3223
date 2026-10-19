@@ -38,4 +38,11 @@ public class OptimizedProductPlan implements Plan {
    public Schema schema() {
       return bestplan.schema();
    }
+   
+   /**
+    * Returns the String of this product plan + its children plans
+    */
+   public String printQueryPlan(int depth) {
+	   return bestplan.printQueryPlan(depth);
+   }
 }

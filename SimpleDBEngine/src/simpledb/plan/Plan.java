@@ -45,4 +45,10 @@ public interface Plan {
     * @return the query's schema
     */
    public Schema schema();
+   
+   /**
+    * Recursively prints the query plan to terminal.
+    * @return the String to be printed of the plan + its children plans
+    */
+   public String  printQueryPlan(int depth);
 }

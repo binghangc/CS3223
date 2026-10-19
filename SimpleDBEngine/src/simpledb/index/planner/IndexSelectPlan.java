@@ -84,4 +84,16 @@ public class IndexSelectPlan implements Plan {
    public Schema schema() {
       return p.schema();
    }
+   
+   /**
+    * 
+    */
+   public String printQueryPlan(int depth) {
+	   String ans = "";
+	   for (int i = 0; i < depth; ++i) {
+		   ans += " ";
+	   }
+	   String child = p.printQueryPlan(depth + 1);
+	   return ans + "σ(" + ii.toString() + '=' + val.toString() + ")\n" + child;
+   }
 }

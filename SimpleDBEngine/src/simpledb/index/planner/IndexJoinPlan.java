@@ -88,4 +88,16 @@ public class IndexJoinPlan implements Plan {
    public Schema schema() {
       return sch;
    }
+   
+   /**
+    * 
+    */
+   public String printQueryPlan(int depth) {
+	   String ans = "";
+	   for (int i = 0; i < depth; ++i) {
+		   ans += " ";
+	   }
+	   String children = p1.printQueryPlan(depth + 1) + p2.printQueryPlan(depth + 1);
+	   return ans + "⨝(using " + ii.toString() + "=" + this.joinfield + ")\n" + children;
+   }
 }

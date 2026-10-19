@@ -69,4 +69,17 @@ public class ProjectPlan implements Plan {
    public Schema schema() {
       return schema;
    }
+   
+   /**
+    * 
+    */
+   public String printQueryPlan(int depth) {
+	   String tab = "";
+	   for (int i = 0; i < depth; ++i) {
+		   tab += " ";
+	   }
+	   String child = p.printQueryPlan(depth + 1);
+	   
+	   return tab + "π(" + schema.fields().toString() + ")\n" + child;
+   }
 }
