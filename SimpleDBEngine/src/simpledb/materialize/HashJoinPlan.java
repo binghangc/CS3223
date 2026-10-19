@@ -173,6 +173,18 @@ public class HashJoinPlan implements Plan {
    public Schema schema() {
       return sch;
    }
+   
+   /**
+    * Returns the String of this hash join plan + its children plans
+    */
+   public String printQueryPlan(int depth) {
+	   String ans = "";
+	   for (int i = 0; i < depth; ++i) {
+		   ans += " ";
+	   }
+	   String children = p1.printQueryPlan(depth + 1) + p2.printQueryPlan(depth + 1);
+	   return ans + "⨝(hash join on " + fldname1 + "=" + fldname2 + ")\n" + children;
+   }
 
    private static class Partition {
       final TempTable table;

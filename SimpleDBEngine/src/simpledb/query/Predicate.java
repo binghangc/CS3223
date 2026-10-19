@@ -136,6 +136,24 @@ public class Predicate {
       }
       return null;
    }
+   
+   /**
+    * Searches for a term of the form field1[opr]field2, where opr is any operator.
+    * Removes the specified term if it exists.
+    */
+   public boolean removeTerm(String field1, String field2) {
+	   for (Term t : terms) {
+		   if (field1.equals(t.equatesWithField(field2))) {
+			   terms.remove(t);
+			   return true;
+		   }
+	   }
+	   return false;
+   }
+   
+   public int size() {
+	   return terms.size();
+   }
 
    public String toString() {
       Iterator<Term> iter = terms.iterator();

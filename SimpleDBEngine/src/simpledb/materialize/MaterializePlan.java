@@ -84,4 +84,16 @@ public class MaterializePlan implements Plan {
    public Schema schema() {
       return srcplan.schema();
    }
+   
+   /**
+    * Returns the String of this materialize plan + its children plans
+    */
+   public String printQueryPlan(int depth) {
+	   String tab = "";
+	   for (int i = 0; i < depth; ++i) {
+		   tab += " ";
+	   }
+	   String child = srcplan.printQueryPlan(depth + 1);
+	   return tab + "materialize as temp table\n" + child;
+   }
 }

@@ -75,7 +75,7 @@ public class MultibufferProductPlan implements Plan {
       // this guesses at the # of chunks
       int avail = tx.availableBuffs();
       int size = new MaterializePlan(tx, rhs).blocksAccessed();
-      int numchunks = size / avail;
+      int numchunks = size / avail + 1;
       return rhs.blocksAccessed() +
             (lhs.blocksAccessed() * numchunks);
    }
@@ -125,5 +125,17 @@ public class MultibufferProductPlan implements Plan {
       src.close();
       dest.close();
       return t;
+   }
+   
+   /**
+    * Returns the String of this product join plan + its children plans
+    */
+   public String printQueryPlan(int depth) {
+	   String tab = "";
+	   for (int i = 0; i < depth; ++i) {
+		   tab += " ";
+	   }
+	   String children = lhs.printQueryPlan(depth + 1) + rhs.printQueryPlan(depth + 1);
+	   return tab + "×\n" + children;
    }
 }

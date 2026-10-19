@@ -74,9 +74,18 @@ class TablePlanner {
       Plan productPlan = makeProductJoin(current, currsch);
       
       Plan bestPlan = indexPlan;
-      if (bestPlan == null || mergePlan.blocksAccessed() < bestPlan.blocksAccessed()) bestPlan = mergePlan;
-      if (bestPlan == null || hashPlan.blocksAccessed() < bestPlan.blocksAccessed()) bestPlan = hashPlan;
-      if (bestPlan == null || productPlan.blocksAccessed() < bestPlan.blocksAccessed()) bestPlan = productPlan;
+      String planName = "Index Join";
+      if (bestPlan == null || mergePlan.blocksAccessed() < bestPlan.blocksAccessed()) { bestPlan = mergePlan; planName = "Merge Join"; };
+      if (bestPlan == null || hashPlan.blocksAccessed() < bestPlan.blocksAccessed()) { bestPlan = hashPlan; planName = "Hash Join"; };
+      if (bestPlan == null || productPlan.blocksAccessed() < bestPlan.blocksAccessed()) { bestPlan = productPlan; planName = "Product Join"; };
+      
+      // Print statement to check which plan is used.
+      System.out.println("Index cost: " + indexPlan.blocksAccessed());
+      System.out.println("Hash cost: " + hashPlan.blocksAccessed());
+      System.out.println("Merge cost: " + mergePlan.blocksAccessed());
+      System.out.println("Product cost: " + productPlan.blocksAccessed());
+      System.out.println("Using " + planName);
+      
       return bestPlan;
    }
 
@@ -114,14 +123,10 @@ class TablePlanner {
          String outerfield = mypred.equatesWithField(fldname);
          if (outerfield != null && currsch.hasField(outerfield)) {
             IndexInfo ii = indexes.get(fldname);
-            Plan p = new IndexJoinPlan(current, myplan, ii, outerfield);
-
-            // Checks if planner actually selected the index join
-            System.out.println("Using IndexJoinPlan on " + fldname + " with outer field " + outerfield);
-            // Print statement to check if planner actually selected the index join
+            Plan p = new IndexJoinPlan(current, myplan, ii, outerfield);            
 
             p = addSelectPred(p);
-            return addJoinPred(p, currsch);
+            return addJoinPred(p, currsch, fldname, outerfield);
          }
       }
       return null;
@@ -132,9 +137,8 @@ class TablePlanner {
          String outerfield = mypred.equatesWithField(fldname);
          if (outerfield != null && currsch.hasField(outerfield)) {
             Plan rhs = addSelectPred(myplan);
-            System.out.println("Using MergeJoinPlan on " + outerfield + " = " + fldname);
             Plan p = new MergeJoinPlan(tx, current, rhs, outerfield, fldname);
-            return addJoinPred(p, currsch);
+            return addJoinPred(p, currsch, fldname, outerfield);
          }
       }
       return null;
@@ -151,8 +155,8 @@ class TablePlanner {
 		   String outerfield = mypred.equatesWithField(fldname);
 		   if (outerfield != null && currsch.hasField(outerfield)) {
 			   Plan rhs = addSelectPred(myplan);
-			   Predicate joinpred = mypred.joinSubPred(currsch, myschema);
-			   return new HashJoinPlan(tx, current, rhs, outerfield, fldname);
+			   Plan p = new HashJoinPlan(tx, current, rhs, outerfield, fldname);
+			   return addJoinPred(p, currsch, fldname, outerfield);
 		   }
 	   }
 	   return null;
@@ -166,10 +170,28 @@ class TablePlanner {
          return p;
    }
 
+   /**
+    * Add select predicates that apply to the union of both schemas, but not individual schemas.
+    */
    private Plan addJoinPred(Plan p, Schema currsch) {
       Predicate joinpred = mypred.joinSubPred(currsch, myschema);
       if (joinpred != null)
          return new SelectPlan(p, joinpred);
+      else
+         return p;
+   }
+   
+   /**
+    * Add select predicates that apply to the union of both schemas, but not individual schemas.
+    * Predicates where both terms were used in the join fields are excluded.
+    */
+   private Plan addJoinPred(Plan p, Schema currsch, String joinfield1, String joinfield2) {
+      Predicate joinpred = mypred.joinSubPred(currsch, myschema);
+      if (joinpred != null) {
+    	  joinpred.removeTerm(joinfield1, joinfield2);
+    	  if (joinpred.size() == 0) return p;
+    	  return new SelectPlan(p, joinpred);
+      }
       else
          return p;
    }

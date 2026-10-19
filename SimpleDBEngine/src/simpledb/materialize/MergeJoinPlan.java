@@ -101,7 +101,7 @@ public class MergeJoinPlan implements Plan {
    }
    
    /**
-    * 
+    * Returns the String of this merge join plan + its children plans
     */
    public String printQueryPlan(int depth) {
 	   String ans = "";

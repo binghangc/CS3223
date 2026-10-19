@@ -130,4 +130,16 @@ public class GroupByPlan implements Plan {
    public Schema schema() {
       return sch;
    }
+   
+   /**
+    * Returns the String of this group by plan + its children plans
+    */
+   public String printQueryPlan(int depth) {
+	   String tab = "";
+	   for (int i = 0; i < depth; ++i) {
+		   tab += " ";
+	   }
+	   String child = p.printQueryPlan(depth + 1);
+	   return tab + "Group by " + groupfields.toString() + "\n" + child;
+   }
 }

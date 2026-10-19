@@ -88,6 +88,18 @@ public class SortPlan implements Plan {
       return sch;
    }
    
+   /**
+    * Returns the String of this sort plan + its child plan
+    */
+   public String printQueryPlan(int depth) {
+	   String tab = "";
+	   for (int i = 0; i < depth; ++i) {
+		   tab += " ";
+	   }
+	   String child = p.printQueryPlan(depth + 1);
+	   return tab + "Sort by " + comp.toString() +  "\n" + child;
+   }
+   
    private List<TempTable> splitIntoRuns(Scan src) {
       List<TempTable> temps = new ArrayList<>();
       src.beforeFirst();
