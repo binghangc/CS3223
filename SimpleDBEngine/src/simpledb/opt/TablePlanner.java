@@ -6,6 +6,7 @@ import simpledb.record.*;
 import simpledb.query.*;
 import simpledb.metadata.*;
 import simpledb.index.planner.*;
+import simpledb.materialize.HashJoinPlan;
 import simpledb.materialize.MergeJoinPlan;
 import simpledb.multibuffer.MultibufferProductPlan;
 import simpledb.plan.*;
@@ -144,6 +145,18 @@ class TablePlanner {
       return new MultibufferProductPlan(tx, current, p, joinpred);
    }
 
+   private Plan makeHashJoin(Plan current, Schema currsch) {
+	   for (String fldname : myschema.fields()) {
+		   String outerfield = mypred.equatesWithField(fldname);
+		   if (outerfield != null && currsch.hasField(outerfield)) {
+			   Plan rhs = addSelectPred(myplan);
+			   Predicate joinpred = mypred.joinSubPred(currsch, myschema);
+			   return new HashJoinPlan(tx, current, rhs, outerfield, fldname);
+		   }
+	   }
+	   return null;
+   }
+   
    private Plan addSelectPred(Plan p) {
       Predicate selectpred = mypred.selectSubPred(myschema);
       if (selectpred != null)
