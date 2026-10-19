@@ -57,10 +57,7 @@ class TablePlanner {
 
    /**
     * Constructs a join plan of the specified plan
-    * and the table. The plan will use an indexjoin, followed by mergejoin, if
-    * possible.
-    * (Which means that if an indexselect is also possible,
-    * the indexjoin operator takes precedence, follow by mergejoin.)
+    * and the table. The plan will use the best plan out of indexjoin, hashjoin, mergejoin, or productjoin.
     * The method returns null if no join is possible.
     * 
     * @param current the specified plan
@@ -71,12 +68,16 @@ class TablePlanner {
       Predicate joinpred = mypred.joinSubPred(myschema, currsch);
       if (joinpred == null)
          return null;
-      Plan p = makeIndexJoin(current, currsch);
-      if (p == null)
-         p = makeMergeJoin(current, currsch);
-      if (p == null)
-         p = makeProductJoin(current, currsch);
-      return p;
+      Plan indexPlan = makeIndexJoin(current, currsch);
+      Plan hashPlan = makeHashJoin(current, currsch);
+      Plan mergePlan = makeMergeJoin(current, currsch);
+      Plan productPlan = makeProductJoin(current, currsch);
+      
+      Plan bestPlan = indexPlan;
+      if (bestPlan == null || mergePlan.blocksAccessed() < bestPlan.blocksAccessed()) bestPlan = mergePlan;
+      if (bestPlan == null || hashPlan.blocksAccessed() < bestPlan.blocksAccessed()) bestPlan = hashPlan;
+      if (bestPlan == null || productPlan.blocksAccessed() < bestPlan.blocksAccessed()) bestPlan = productPlan;
+      return bestPlan;
    }
 
    /**
