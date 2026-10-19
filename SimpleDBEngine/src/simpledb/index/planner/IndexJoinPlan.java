@@ -90,7 +90,7 @@ public class IndexJoinPlan implements Plan {
    }
    
    /**
-    * 
+    * Returns the String of this Index Join Plan + its children plans
     */
    public String printQueryPlan(int depth) {
 	   String ans = "";

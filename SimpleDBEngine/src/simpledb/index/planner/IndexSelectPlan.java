@@ -86,7 +86,7 @@ public class IndexSelectPlan implements Plan {
    }
    
    /**
-    * 
+    * Returns the String of this Index Select Plan + its child plan
     */
    public String printQueryPlan(int depth) {
 	   String ans = "";
@@ -94,6 +94,6 @@ public class IndexSelectPlan implements Plan {
 		   ans += " ";
 	   }
 	   String child = p.printQueryPlan(depth + 1);
-	   return ans + "σ(" + ii.toString() + '=' + val.toString() + ")\n" + child;
+	   return ans + "σ(using " + ii.toString() + '=' + val.toString() + ")\n" + child;
    }
 }

@@ -71,7 +71,7 @@ public class ProjectPlan implements Plan {
    }
    
    /**
-    * 
+    * Returns the String of this Project Plan + its child plan.
     */
    public String printQueryPlan(int depth) {
 	   String tab = "";

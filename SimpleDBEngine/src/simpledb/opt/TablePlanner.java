@@ -106,7 +106,7 @@ class TablePlanner {
          Constant val = mypred.equatesWithConstant(fldname);
          if (val != null) {
             IndexInfo ii = indexes.get(fldname);
-            System.out.println("index on " + fldname + " used");
+            System.out.println("Index Select on " + fldname + " used");
             return new IndexSelectPlan(myplan, ii, val);
          }
       }
@@ -162,6 +162,9 @@ class TablePlanner {
 	   return null;
    }
    
+   /**
+    * Add the select predicates that apply to the current schema, if any.
+    */
    private Plan addSelectPred(Plan p) {
       Predicate selectpred = mypred.selectSubPred(myschema);
       if (selectpred != null)
@@ -171,7 +174,7 @@ class TablePlanner {
    }
 
    /**
-    * Add select predicates that apply to the union of both schemas, but not individual schemas.
+    * Add the select predicates that apply to the union of both schemas, but not individual schemas.
     */
    private Plan addJoinPred(Plan p, Schema currsch) {
       Predicate joinpred = mypred.joinSubPred(currsch, myschema);
