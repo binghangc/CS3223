@@ -109,6 +109,12 @@ public class Parser {
    public QueryData query() {
       lex.eatKeyword("select");
 
+      boolean distinct = false;
+      if (lex.matchKeyword("distinct")) {
+         lex.eatKeyword("distinct");
+         distinct = true;
+      }
+
       List<String> fields = new ArrayList<>();
       List<AggregationFn> aggfns = new ArrayList<>();
 
@@ -137,7 +143,7 @@ public class Parser {
          sorts = sortList();
       }
 
-      return new QueryData(fields, tables, pred, sorts, groupfields, aggfns);
+      return new QueryData(fields, tables, pred, sorts, groupfields, aggfns, distinct);
    }
 
    private AggregationFn aggregationFn() {

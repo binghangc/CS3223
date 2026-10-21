@@ -7,87 +7,100 @@ import simpledb.materialize.*;
 
 /**
  * Data for the SQL <i>select</i> statement.
+ * 
  * @author Edward Sciore
  */
 public class QueryData {
    private List<String> fields;
    private Collection<String> tables;
+   private boolean distinct;
    private Predicate pred;
    private List<Sort> sorts;
    private List<String> groupfields;
    private List<AggregationFn> aggfns;
-   
+
    /**
     * Saves the field and table list and predicate.
     */
    public QueryData(List<String> fields, Collection<String> tables, Predicate pred, List<Sort> sorts,
-		   			List<String> groupfields, List<AggregationFn> aggfns) {
+         List<String> groupfields, List<AggregationFn> aggfns, boolean distinct) {
       this.fields = fields;
       this.tables = tables;
       this.pred = pred;
       this.sorts = sorts;
       this.groupfields = groupfields;
       this.aggfns = aggfns;
+      this.distinct = distinct;
    }
-   
+
+   public QueryData(List<String> fields, Collection<String> tables, Predicate pred, List<Sort> sorts,
+         List<String> groupfields, List<AggregationFn> aggfns) {
+      this(fields, tables, pred, sorts, groupfields, aggfns, false);
+   }
+
    // backwards compatibility
    public QueryData(List<String> fields, Collection<String> tables, Predicate pred, List<Sort> sorts) {
-	   this.fields = fields;
-	   this.tables = tables;
-	   this.pred = pred;
-	   this.sorts = sorts;
-	   this.groupfields = new ArrayList<>();
-	   this.aggfns = new ArrayList<>();
-	}
-   
+      this(fields, tables, pred, sorts, new ArrayList<>(), new ArrayList<>(), false);
+   }
+
+   /*
+    * Getter for distinct
+    */
+   public boolean isDistinct() {
+      return distinct;
+   }
+
    /**
     * Returns the fields mentioned in the select clause.
+    * 
     * @return a list of field names
     */
    public List<String> fields() {
       return fields;
    }
-   
+
    /**
     * Returns the tables mentioned in the from clause.
+    * 
     * @return a collection of table names
     */
    public Collection<String> tables() {
       return tables;
    }
-   
+
    /**
     * Returns the predicate that describes which
     * records should be in the output table.
+    * 
     * @return the query predicate
     */
    public Predicate pred() {
       return pred;
    }
-   
+
    /**
     * @return the list of sort fields
     */
    public List<Sort> sorts() {
-	   return sorts;
+      return sorts;
    }
-   
+
    /**
     * @return the list of grouping fields
     */
    public List<String> groupFields() {
-	   return groupfields;
+      return groupfields;
    }
-   
+
    /**
     * @return the list of aggregation functions used
     */
    public List<AggregationFn> aggregationFns() {
-	   return aggfns;
+      return aggfns;
    }
-   
+
    public String toString() {
-      String result = "select ";
+      String result = distinct ? "select distinct " : "select ";
       for (String fldname : fields) {
          String expression = fldname;
          for (AggregationFn fn : aggfns)
@@ -95,11 +108,11 @@ public class QueryData {
                expression = fn.toSql();
          result += expression + ", ";
       }
-      result = result.substring(0, result.length()-2); //remove final comma
+      result = result.substring(0, result.length() - 2); // remove final comma
       result += " from ";
       for (String tblname : tables)
          result += tblname + ", ";
-      result = result.substring(0, result.length()-2); //remove final comma
+      result = result.substring(0, result.length() - 2); // remove final comma
       String predstring = pred.toString();
       if (!predstring.equals(""))
          result += " where " + predstring;
@@ -108,7 +121,7 @@ public class QueryData {
          result += " group by ";
          for (String fldname : groupfields)
             result += fldname + ", ";
-         result = result.substring(0, result.length()-2); //remove final comma
+         result = result.substring(0, result.length() - 2); // remove final comma
       }
 
       if (sorts.size() > 0) {
@@ -116,7 +129,7 @@ public class QueryData {
          for (Sort sort : sorts) {
             result += sort.toString() + ", ";
          }
-         result = result.substring(0, result.length()-2); //remove final comma
+         result = result.substring(0, result.length() - 2); // remove final comma
       }
       return result;
    }
