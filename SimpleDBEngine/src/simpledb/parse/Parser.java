@@ -179,8 +179,28 @@ public class Parser {
       }
 
       lex.eatDelim('(');
+      boolean distinct = false;
+
+      if (lex.matchKeyword("distinct")) {
+         lex.eatKeyword("distinct");
+         distinct = true;
+
+         // Only Count fn is supported for distinct ops
+         if (!fn.equals("count")) {
+            throw new BadSyntaxException(
+                  "DISTINCT inside an aggregate is supported only for COUNT.");
+         }
+      }
+
       String fldname;
       if (fn.equals("count") && lex.matchDelim('*')) {
+         // COUNT(DISTINCT *) is invalid!
+         if (distinct) {
+            throw new BadSyntaxException(
+                  "COUNT(DISTINCT *) is invalid. Specify a field, "
+                        + "for example COUNT(DISTINCT majorid).");
+         }
+
          lex.eatDelim('*');
          fldname = "*";
       } else {
@@ -193,7 +213,9 @@ public class Parser {
       }
 
       else if (fn.equals("count")) {
-         return new CountFn(fldname);
+         return distinct
+               ? new DistinctCountFn(fldname)
+               : new CountFn(fldname);
       }
 
       else if (fn.equals("avg")) {
