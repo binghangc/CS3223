@@ -52,9 +52,8 @@ public class Parser {
 
    public Term term() {
       Expression lhs = expression();
-      /**
-       * Supports =, <, <=, >, >=, !=, <>
-       */
+   
+      // Supports =, <, <=, >, >=, !=, <>
       String opr = "";
 
       if (lex.matchOpr('=')) {

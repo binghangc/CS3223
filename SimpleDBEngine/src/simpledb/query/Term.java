@@ -15,7 +15,7 @@ public class Term {
 
    /**
     * Create a new term that compares two expressions
-    * for equality.
+    * using the specified comparison operator.
     * 
     * @param lhs the LHS expression
     * @param opr the operator type

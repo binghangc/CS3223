@@ -63,7 +63,7 @@ public class PlannerTest1 {
       
       // ordered by B descending
       System.out.println("Selecting all records with 4<A<8 desc");
-      qry = "select B from tempT1 where A>4 and A<8 order by A desc";
+      qry = "select B from tempT1 where A>4 and A<8 order by B desc";
       p = planner.createQueryPlan(qry, tx);
       s = p.open();
       while (s.next())

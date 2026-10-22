@@ -38,9 +38,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
 
       tableplanners.clear();
 
-      // Step 1: Create a TablePlanner object for each mentioned table
-      // this version forces the join strategy to be one of the specific types in 
-      // the JoinStrategy enum
+      // Step 1: Create a TablePlanner for each table using the selected join strategy
       for (String tblname : data.tables()) {
          TablePlanner tp = new TablePlanner(tblname, data.pred(), tx, mdm, strategy);
          tableplanners.add(tp);
@@ -48,8 +46,6 @@ public class HeuristicQueryPlanner implements QueryPlanner {
 
       // Step 2: Choose the lowest-size plan to begin the join order
       Plan currentplan = getLowestSelectPlan();
-      
-//      System.out.println("Starting plan: " + currentplan.schema().fields());
       
       // Step 3: Repeatedly add a plan to the join order
       while (!tableplanners.isEmpty()) {
