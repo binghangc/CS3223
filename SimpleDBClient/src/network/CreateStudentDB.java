@@ -15,17 +15,21 @@ public class CreateStudentDB {
          stmt.executeUpdate(s);
          System.out.println("Table STUDENT created.");
          
-         s = "create index student_name on student (sname) using btree";
+         s = "create index student_name on student (sname) using hash";
          stmt.executeUpdate(s);
          System.out.println("Index student_name created.");
          
-         s = "create index student_major on student (majorid) using btree";
+         s = "create index student_major on student (majorid) using hash";
          stmt.executeUpdate(s);
          System.out.println("Index student_major created.");
          
          s = "create index student_sid on student (sid) using btree";
          stmt.executeUpdate(s);
          System.out.println("Index student_sid created.");
+         
+         s = "create index student_gradyear on student (gradyear) using btree";
+         stmt.executeUpdate(s);
+         System.out.println("Index student_gradyear created.");
 
          s = "insert into STUDENT(SId, SName, MajorId, GradYear) values ";
          String[] studvals = { "(1, 'joe', 10, 2021)",
@@ -36,7 +40,11 @@ public class CreateStudentDB {
                "(6, 'kim', 20, 2020)",
                "(7, 'art', 30, 2021)",
                "(8, 'pat', 20, 2019)",
-               "(9, 'lee', 10, 2021)" };
+               "(9, 'lee', 10, 2021)",
+               "(10, 'mia', 10, 2023)",
+               "(11, 'jay', 20, 2024)",
+               "(12, 'eva', 30, 2022)",
+               "(13, 'zoe', 10, 2025)"};
          for (int i = 0; i < studvals.length; i++)
             stmt.executeUpdate(s + studvals[i]);
          System.out.println("STUDENT records inserted.");
@@ -77,7 +85,10 @@ public class CreateStudentDB {
                "(23, 12, 'turing', 2019)",
                "(33, 32, 'newton', 2019)",
                "(43, 32, 'einstein', 2017)",
-               "(53, 62, 'brando', 2018)" };
+               "(53, 62, 'brando', 2018)",
+               "(63, 22, 'knuth', 2022)",
+               "(73, 42, 'gauss', 2021)",
+               "(83, 52, 'stan', 2023)"};
          for (int i = 0; i < sectvals.length; i++)
             stmt.executeUpdate(s + sectvals[i]);
          System.out.println("SECTION records inserted.");
@@ -97,7 +108,15 @@ public class CreateStudentDB {
                "(34, 2, 43, 'B+')",
                "(44, 4, 33, 'B' )",
                "(54, 4, 53, 'A' )",
-               "(64, 6, 53, 'A' )" };
+               "(64, 6, 53, 'A' )",
+               "(74, 1, 63, 'A')",
+               "(84, 3, 63, 'A')",
+               "(94, 10, 13, 'A')",
+               "(104, 10, 63, 'B+')",
+               "(114, 11, 73, 'B')",
+               "(124, 12, 83, 'A')",
+               "(134, 13, 23, 'A')",
+               "(144, 2, 73, 'B+')"};
          for (int i = 0; i < enrollvals.length; i++)
             stmt.executeUpdate(s + enrollvals[i]);
          System.out.println("ENROLL records inserted.");
