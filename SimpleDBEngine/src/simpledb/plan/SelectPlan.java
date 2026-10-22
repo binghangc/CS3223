@@ -85,7 +85,8 @@ public class SelectPlan implements Plan {
    }
    
    /**
-    * 
+    * Returns a string representation of the selection plan
+    * and its child plan
     */
    public String printQueryPlan(int depth) {
 	   String ans = "";

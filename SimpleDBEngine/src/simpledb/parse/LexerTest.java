@@ -3,7 +3,7 @@ import java.util.Scanner;
 
 // Will successfully read in lines of text denoting an
 // SQL expression of the form "id opr c" or "c opr id".
-// Example: joe=1, joe <= 1, 1 == Joe
+// Example: joe=1, joe <= 1, 1 => Joe
 
 public class LexerTest {
 	public static void main(String[] args) {

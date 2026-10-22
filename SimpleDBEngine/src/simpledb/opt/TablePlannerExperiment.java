@@ -37,8 +37,7 @@ class TablePlanner {
     * @param tx      the calling transaction
     */
    
-   // this version of TablePlanner forces the join onto one of the specific joining strategies available in the 
-   // JoinStrategy enum
+   // allows the join strategy to be specified for benchmarking purposes
    public TablePlanner(String tblname, Predicate mypred, Transaction tx, MetadataMgr mdm, JoinStrategy strategy) {
       this.mypred = mypred;
       this.tx = tx;
@@ -126,11 +125,6 @@ class TablePlanner {
    }
 
    private Plan makeIndexJoin(Plan current, Schema currsch) {
-      // diagnostic print statements to check if index join is running correctly
-//      System.out.println("Trying index join. Inner table fields: " + myschema.fields());
-//      System.out.println("Available indexes " + indexes.keySet());
-//      System.out.println("Outer fields " + currsch.fields());
-
       for (String fldname : indexes.keySet()) {
          String outerfield = mypred.equatesWithField(fldname);
          if (outerfield != null && currsch.hasField(outerfield)) {

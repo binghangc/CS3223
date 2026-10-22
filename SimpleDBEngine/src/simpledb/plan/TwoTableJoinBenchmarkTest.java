@@ -43,7 +43,7 @@ public class TwoTableJoinBenchmarkTest {
       SimpleDB db = new SimpleDB("studentdb");
       MetadataMgr mdm = db.mdMgr();
       
-      // holds all the timings across all algos across three measured runs
+      // stores the execution times for each algo across three measured runs
       double[][] timings = new double[ALGORITHMS.length][MEASURED_RUNS];
 
       long expectedRows = -1;
