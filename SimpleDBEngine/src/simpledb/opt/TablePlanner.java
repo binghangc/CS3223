@@ -68,6 +68,7 @@ class TablePlanner {
       Predicate joinpred = mypred.joinSubPred(myschema, currsch);
       if (joinpred == null)
          return null;
+      
       Plan indexPlan = makeIndexJoin(current, currsch);
       Plan hashPlan = makeHashJoin(current, currsch);
       Plan mergePlan = makeMergeJoin(current, currsch);
@@ -80,10 +81,10 @@ class TablePlanner {
       if (bestPlan == null || productPlan.blocksAccessed() < bestPlan.blocksAccessed()) { bestPlan = productPlan; planName = "Product Join"; };
       
       // Print statement to check which plan is used.
-      System.out.println("Index cost: " + indexPlan.blocksAccessed());
-      System.out.println("Hash cost: " + hashPlan.blocksAccessed());
-      System.out.println("Merge cost: " + mergePlan.blocksAccessed());
-      System.out.println("Product cost: " + productPlan.blocksAccessed());
+      System.out.println("Index cost: " + (indexPlan != null ? indexPlan.blocksAccessed() : "N/A. No suitable index available."));
+      System.out.println("Hash cost: " + (hashPlan != null ? hashPlan.blocksAccessed() : "N/A. No applicable join predicate."));
+      System.out.println("Merge cost: " + (mergePlan != null ? mergePlan.blocksAccessed() : "N/A. No applicable join predicate."));
+      System.out.println("Product cost: " + (productPlan != null ? productPlan.blocksAccessed() : "N/A. No applicable join plan."));
       System.out.println("Using " + planName);
       
       return bestPlan;
